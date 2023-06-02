@@ -18,15 +18,15 @@ public class UserServiceImpl implements UserService {
     private final UserMapper mapper;
 
     @Override
-    public User add(UserDto user) {
+    public UserDto add(UserDto user) {
         checkEmail(user.getEmail());
-        return repository.add(mapper.toUser(user));
+        return mapper.toUserDto(repository.add(mapper.toUser(user)));
     }
 
     @Override
-    public User update(long id, UserDto user) {
+    public UserDto update(long id, UserDto user) {
         checkId(id);
-        User savedUser = getById(id);
+        User savedUser = repository.getById(id);
         if (user.getEmail() == null) {
             user.setEmail(savedUser.getEmail());
         }
@@ -36,17 +36,18 @@ public class UserServiceImpl implements UserService {
             }
             user.setName(savedUser.getName());
         }
-        return repository.update(id, mapper.toUser(user));
+        return mapper.toUserDto(repository.update(id, mapper.toUser(user)));
     }
 
     @Override
-    public List<User> getAll() {
-        return repository.getAll();
+    public List<UserDto> getAll() {
+        return mapper.toDtoList(repository.getAll());
     }
 
     @Override
-    public User getById(long id) {
-        return repository.getById(id);
+    public UserDto getById(long id) {
+        checkId(id);
+        return mapper.toUserDto(repository.getById(id));
     }
 
     @Override
@@ -54,8 +55,7 @@ public class UserServiceImpl implements UserService {
         repository.delete(id);
     }
 
-    @Override
-    public void checkId(long id) {
+    private void checkId(long id) {
         boolean result = getAll().stream().anyMatch(u -> u.getId() == id);
         if (!result) {
             throw new NotFoundException(String.format("There is no user with id %d.", id));
