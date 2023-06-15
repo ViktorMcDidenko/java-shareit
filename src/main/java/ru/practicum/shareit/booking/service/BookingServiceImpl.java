@@ -85,7 +85,7 @@ public class BookingServiceImpl implements BookingService {
             case CURRENT:
                 return mapper.toList(bookingRepository
                         .findByBookerIdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(bookerId, currentDate,
-                                currentDate));//возможно, desc не нужен
+                                currentDate));
             case PAST:
                 return mapper.toList(bookingRepository
                         .findByBookerIdAndEndIsBeforeOrderByEndDesc(bookerId, currentDate));
@@ -94,10 +94,10 @@ public class BookingServiceImpl implements BookingService {
                         .findByBookerIdAndStartIsAfterOrderByStartDesc(bookerId, currentDate));
             case WAITING:
                 return mapper.toList(bookingRepository
-                        .findByBookerIdAndStatusOrderByStartDesc(bookerId, Status.WAITING));//возможно, desc не нужен
+                        .findByBookerIdAndStatusOrderByStartDesc(bookerId, Status.WAITING));
             case REJECTED:
                 return mapper.toList(bookingRepository
-                        .findByBookerIdAndStatusOrderByStartDesc(bookerId, Status.REJECTED));//возможно, desc не нужен
+                        .findByBookerIdAndStatusOrderByStartDesc(bookerId, Status.REJECTED));
             default:
                 throw new RuntimeException("Unknown state: " + state);
         }

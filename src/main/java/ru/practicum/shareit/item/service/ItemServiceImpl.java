@@ -68,7 +68,7 @@ public class ItemServiceImpl implements ItemService {
     public ItemDto getById(long userId, long id) {
         Item item = itemRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(String.format("There is no item with id %d.", id)));
-        List<CommentDto> comments = commentMapper.toList(commentRepository.findByItemId(id)); //findAll?
+        List<CommentDto> comments = commentMapper.toList(commentRepository.findByItemId(id));
         if (item.getOwner().getId() == userId) {
             LocalDateTime now = LocalDateTime.now();
             Optional<Booking> lastBooking = bookingRepository.getLastBooking(id, now);
