@@ -131,7 +131,7 @@ public class ItemServiceImpl implements ItemService {
         List<Booking> bookings = bookingRepository
                 .findByBookerIdAndItemIdAndStatusAndEndIsBefore(userId, itemId, Status.APPROVED, LocalDateTime.now());
         if (bookings.isEmpty()) {
-            throw new NoAccessException("You can not leave your comment for item with id " + itemId);
+            throw new RuntimeException("You can not leave your comment for item with id " + itemId);
         }
         Booking booking = bookings.get(0);
         commentDto.setCreated(LocalDateTime.now());

@@ -1,7 +1,5 @@
 package ru.practicum.shareit.booking.model;
 
-import ru.practicum.shareit.exceptions.ValidationException;
-
 public enum State {
     ALL, CURRENT, PAST, FUTURE, WAITING, REJECTED;
 
@@ -11,6 +9,6 @@ public enum State {
                 return s;
             }
         }
-        throw new ValidationException(String.format("There is no %s state", state));
+        throw new RuntimeException("Unknown state: " + state);
     }
 }

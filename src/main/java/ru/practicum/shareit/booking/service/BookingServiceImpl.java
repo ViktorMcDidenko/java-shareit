@@ -10,9 +10,7 @@ import ru.practicum.shareit.booking.model.BookingMapper;
 import ru.practicum.shareit.booking.model.State;
 import ru.practicum.shareit.booking.model.Status;
 import ru.practicum.shareit.booking.repository.BookingRepository;
-import ru.practicum.shareit.exceptions.NoAccessException;
 import ru.practicum.shareit.exceptions.NotFoundException;
-import ru.practicum.shareit.exceptions.ValidationException;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.model.User;
@@ -42,10 +40,10 @@ public class BookingServiceImpl implements BookingService {
             throw new NotFoundException("You can not book your own item.");
         }
         if (!item.getAvailable()) {
-            throw new ValidationException(String.format("The item %d is unavailable.", item.getId()));
+            throw new RuntimeException(String.format("The item %d is unavailable.", item.getId()));
         }
         if (!bookingDtoCreate.getEnd().isAfter(bookingDtoCreate.getStart())) {
-            throw new ValidationException(String.format("The item %d is unavailable for these dates.", item.getId()));
+            throw new RuntimeException(String.format("The item %d is unavailable for these dates.", item.getId()));
         }
         Booking booking = bookingRepository.save(mapper.toBooking(bookingDtoCreate, item, booker));
         return mapper.toDto(booking);
@@ -56,7 +54,7 @@ public class BookingServiceImpl implements BookingService {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new NotFoundException(String.format("There is no booking with id %d.", bookingId)));
         if (booking.getItem().getOwner().getId() != ownerId) {
-            throw new NoAccessException("You do not have rights to edit this booking.");
+            throw new NotFoundException("You do not have rights to edit this booking.");
         }
         if (booking.getStatus().equals(Status.APPROVED)) {
             throw new RuntimeException("You have already approved this booking.");
@@ -70,7 +68,7 @@ public class BookingServiceImpl implements BookingService {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new NotFoundException(String.format("There is no booking with id %d.", bookingId)));
         if (booking.getItem().getOwner().getId() != userId && booking.getBooker().getId() != userId) {
-            throw new NoAccessException("You do not have rights to view this booking.");
+            throw new NotFoundException("You have no bookings with id " + bookingId);
         }
         return mapper.toDto(booking);
     }
@@ -101,7 +99,7 @@ public class BookingServiceImpl implements BookingService {
                 return mapper.toList(bookingRepository
                         .findByBookerIdAndStatusOrderByStartDesc(bookerId, Status.REJECTED));//возможно, desc не нужен
             default:
-                throw new ValidationException(String.format("There is no %s state", s));
+                throw new RuntimeException("Unknown state: " + state);
         }
     }
 
@@ -132,7 +130,7 @@ public class BookingServiceImpl implements BookingService {
             case REJECTED:
                 return mapper.toList(bookingRepository.findByItemIdInAndStatus(items, Status.REJECTED));
             default:
-                throw new ValidationException(String.format("There is no %s state", s));
+                throw new RuntimeException("Unknown state: " + state);
         }
     }
 }
