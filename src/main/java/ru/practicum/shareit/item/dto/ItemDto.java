@@ -6,11 +6,13 @@ import ru.practicum.shareit.booking.dto.BookingItemDto;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 import java.util.Objects;
 
 @Getter
 @Setter
 @ToString
+@NoArgsConstructor
 public class ItemDto {
     private Long id;
     @NotBlank(groups = Create.class)
@@ -21,12 +23,21 @@ public class ItemDto {
     private Boolean available;
     private BookingItemDto lastBooking;
     private BookingItemDto nextBooking;
+    private List<CommentDto> comments;
 
     public ItemDto(Long id, String name, String description, Boolean available) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.available = available;
+    }
+
+    public ItemDto(Long id, String name, String description, Boolean available, List<CommentDto> comments) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.available = available;
+        this.comments = comments;
     }
 
     @Override

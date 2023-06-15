@@ -14,25 +14,28 @@ import java.util.Set;
 public interface BookingRepository extends JpaRepository<Booking, Long> {
     List<Booking> findByBookerIdOrderByStartDesc(long bookerId);
 
-    List<Booking> findByBookerIdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(long bookerId, LocalDateTime currentDate1,
-                                                                              LocalDateTime currentDate2);
+    List<Booking> findByBookerIdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(long bookerId, LocalDateTime date1,
+                                                                              LocalDateTime date2);
 
-    List<Booking> findByBookerIdAndEndIsBeforeOrderByEndDesc(long bookerId, LocalDateTime currentDate);
+    List<Booking> findByBookerIdAndEndIsBeforeOrderByEndDesc(long bookerId, LocalDateTime date);
 
-    List<Booking> findByBookerIdAndStartIsAfterOrderByStartDesc(long bookerId, LocalDateTime currentDate);
+    List<Booking> findByBookerIdAndStartIsAfterOrderByStartDesc(long bookerId, LocalDateTime date);
 
     List<Booking> findByBookerIdAndStatusOrderByStartDesc(long bookerId, Status status);
 
     List<Booking> findAllByItemIdInOrderByStartDesc(Set<Long> items);
 
-    List<Booking> findByItemIdInAndStartIsBeforeAndEndIsAfterOrderByStartDesc(Set<Long> items,LocalDateTime currentDate1,
-                                                                              LocalDateTime currentDate2);
+    List<Booking> findByItemIdInAndStartIsBeforeAndEndIsAfterOrderByStartDesc(Set<Long> items,LocalDateTime date1,
+                                                                              LocalDateTime date2);
 
-    List<Booking> findByItemIdInAndEndIsBefore(Set<Long> items,LocalDateTime currentDate, Sort sort);
+    List<Booking> findByItemIdInAndEndIsBefore(Set<Long> items,LocalDateTime date, Sort sort);
 
-    List<Booking> findByItemIdInAndEndIsAfterOrderByStartDesc(Set<Long> items,LocalDateTime currentDate);
+    List<Booking> findByItemIdInAndEndIsAfterOrderByStartDesc(Set<Long> items,LocalDateTime date);
 
     List<Booking> findByItemIdInAndStatus(Set<Long> items, Status status);
+
+    List<Booking> findByBookerIdAndItemIdAndStatusAndEndIsBefore(long userId, long itemId, Status status,
+                                                                 LocalDateTime date);
 
     @Query(value = "SELECT * FROM bookings as b " +
             "JOIN items as i ON i.id = b.item_id " +
@@ -40,7 +43,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             "AND b.start_date < ?2 " +
             "AND b.status = 'APPROVED' " +
             "ORDER BY b.start_date DESC LIMIT 1", nativeQuery = true)
-    Optional<Booking> getLastBooking(Long id, LocalDateTime currentTime);
+    Optional<Booking> getLastBooking(Long id, LocalDateTime date);
 
     @Query(value = "SELECT * FROM bookings as b " +
             "JOIN items as i ON i.id = b.item_id " +
@@ -48,5 +51,5 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             "AND b.start_date > ?2 " +
             "AND b.status = 'APPROVED' " +
             "ORDER BY b.start_date ASC LIMIT 1 ", nativeQuery = true)
-    Optional<Booking> getNextBooking(Long id, LocalDateTime currentTime);
+    Optional<Booking> getNextBooking(Long id, LocalDateTime date);
 }

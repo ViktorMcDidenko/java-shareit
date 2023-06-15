@@ -2,6 +2,7 @@ package ru.practicum.shareit.item.model;
 
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.booking.dto.BookingItemDto;
+import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.user.model.User;
 
@@ -28,25 +29,32 @@ public class ItemMapper {
         );
     }
 
+    public ItemDto toItemDto(Item item, List<CommentDto> comments) {
+        return new ItemDto(
+                item.getId(),
+                item.getName(),
+                item.getDescription(),
+                item.getAvailable(),
+                comments
+        );
+    }
+
     public List<ItemDto> toDtoList(List<Item> l) {
         return l.stream().map(this::toItemDto).collect(Collectors.toList());
     }
 
-    public ItemDto toOwnerItemDto(Item item, BookingItemDto nextBooking, BookingItemDto lastBooking) {
+    public List<ItemDto> toDtoList(List<Item> items, List<Comment> comments) {
+        Map<Long, ItemDto> map = items.stream().collect(Collectors.toMap(Item::getId, this::toItemDto, (a, b) -> b));
+        comments.forEach(c -> map.get(c.getItem().getId()).getComments().add(new CommentMapper().toDto(c)));
+        return new ArrayList<>(map.values());
+    }
+
+    public ItemDto toOwnerItemDto(Item item, BookingItemDto nextBooking, BookingItemDto lastBooking,
+                                  List<CommentDto> comments) {
         ItemDto dto = toItemDto(item);
         dto.setNextBooking(nextBooking);
         dto.setLastBooking(lastBooking);
+        dto.setComments(comments);
         return dto;
-    }
-
-    public List<ItemDto> toBookingItemList(Map<ItemDto, BookingItemDto> last, Map<ItemDto, BookingItemDto> next) { //не факт, что это работает
-        Set<ItemDto> uniqueItems = new HashSet<>();
-        uniqueItems.addAll(last.keySet());
-        uniqueItems.addAll(next.keySet());
-        uniqueItems.forEach(item -> {
-            item.setLastBooking(last.get(item));
-            item.setNextBooking(next.get(item));
-        });
-        return new ArrayList<>(uniqueItems);
     }
 }
