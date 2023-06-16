@@ -3,6 +3,7 @@ package ru.practicum.shareit.booking.repository;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.Status;
 
@@ -39,17 +40,17 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     @Query(value = "SELECT * FROM bookings as b " +
             "JOIN items as i ON i.id = b.item_id " +
-            "WHERE b.item_id = ?1 " +
-            "AND b.start_date < ?2 " +
+            "WHERE b.item_id = :itemId " +
+            "AND b.start_date < :date " +
             "AND b.status = 'APPROVED' " +
             "ORDER BY b.start_date DESC LIMIT 1", nativeQuery = true)
-    Optional<Booking> getLastBooking(Long id, LocalDateTime date);
+    Optional<Booking> getLastBooking(@Param("itemId") Long id, @Param("date") LocalDateTime date);
 
     @Query(value = "SELECT * FROM bookings as b " +
             "JOIN items as i ON i.id = b.item_id " +
-            "WHERE b.item_id = ?1 " +
-            "AND b.start_date > ?2 " +
+            "WHERE b.item_id = :itemId " +
+            "AND b.start_date > :date " +
             "AND b.status = 'APPROVED' " +
             "ORDER BY b.start_date ASC LIMIT 1 ", nativeQuery = true)
-    Optional<Booking> getNextBooking(Long id, LocalDateTime date);
+    Optional<Booking> getNextBooking(@Param("itemId") Long id, @Param("date") LocalDateTime date);
 }

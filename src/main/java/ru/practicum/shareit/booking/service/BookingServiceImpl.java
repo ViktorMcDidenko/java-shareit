@@ -76,8 +76,9 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public List<BookingDto> getAllBooker(long bookerId, String state) {
         State s = State.set(state);
-        userRepository.findById(bookerId)
-                .orElseThrow(() -> new NotFoundException(String.format("There is no user with id %d.", bookerId)));
+        if (!userRepository.existsById(bookerId)) {
+            throw new NotFoundException(String.format("There is no user with id %d.", bookerId));
+        }
         LocalDateTime currentDate = LocalDateTime.now();
         switch (s) {
             case ALL:
