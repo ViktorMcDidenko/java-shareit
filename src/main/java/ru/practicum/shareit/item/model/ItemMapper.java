@@ -16,7 +16,8 @@ public class ItemMapper {
                 owner,
                 dto.getName(),
                 dto.getDescription(),
-                dto.getAvailable()
+                dto.getAvailable(),
+                dto.getRequestId()
         );
     }
 
@@ -25,7 +26,8 @@ public class ItemMapper {
                 item.getId(),
                 item.getName(),
                 item.getDescription(),
-                item.getAvailable()
+                item.getAvailable(),
+                item.getRequestId()
         );
     }
 

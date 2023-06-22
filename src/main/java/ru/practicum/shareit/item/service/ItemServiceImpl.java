@@ -134,7 +134,7 @@ public class ItemServiceImpl implements ItemService {
             throw new RuntimeException("You can not leave your comment for item with id " + itemId);
         }
         Booking booking = bookings.get(0);
-        commentDto.setCreated(LocalDateTime.now());
+        //commentDto.setCreated(LocalDateTime.now());
         Comment comment = commentRepository
                 .save(commentMapper.toComment(commentDto, booking.getItem(), booking.getBooker()));
         return commentMapper.toDto(comment);

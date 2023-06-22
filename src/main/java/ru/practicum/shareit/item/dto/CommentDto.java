@@ -1,17 +1,15 @@
 package ru.practicum.shareit.item.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Value;
 
 import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 
-@Data
-@AllArgsConstructor
+@Value
 public class CommentDto {
-    private long id;
+    long id;
     @NotBlank
-    private String text;
-    private String authorName;
-    private LocalDateTime created;
+    String text;
+    String authorName;
+    LocalDateTime created;
 }
