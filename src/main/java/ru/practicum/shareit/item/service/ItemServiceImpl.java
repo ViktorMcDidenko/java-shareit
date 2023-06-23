@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.BookingItemDto;
@@ -87,8 +88,8 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemDto> get(long userId) {
-        List<Item> items = itemRepository.findByOwnerIdIs(userId);
+    public List<ItemDto> get(long userId, int from, int size) {
+        List<Item> items = itemRepository.findByOwnerIdIs(userId, PageRequest.of(from / size, size));
         if (items.isEmpty()) {
             return Collections.emptyList();
         }
@@ -119,11 +120,11 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemDto> search(String text) {
+    public List<ItemDto> search(String text, int from, int size) {
         if (text.isBlank()) {
             return Collections.emptyList();
         }
-        return itemMapper.toDtoList(itemRepository.search(text));
+        return itemMapper.toDtoList(itemRepository.search(text, PageRequest.of(from / size, size)));
     }
 
     @Override
@@ -134,7 +135,6 @@ public class ItemServiceImpl implements ItemService {
             throw new RuntimeException("You can not leave your comment for item with id " + itemId);
         }
         Booking booking = bookings.get(0);
-        //commentDto.setCreated(LocalDateTime.now());
         Comment comment = commentRepository
                 .save(commentMapper.toComment(commentDto, booking.getItem(), booking.getBooker()));
         return commentMapper.toDto(comment);

@@ -1,6 +1,8 @@
 package ru.practicum.shareit.booking.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.BookingDto;
@@ -74,38 +76,39 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingDto> getAllBooker(long bookerId, String state) {
+    public List<BookingDto> getAllBooker(long bookerId, String state, int from, int size) {
         State s = State.set(state);
         if (!userRepository.existsById(bookerId)) {
             throw new NotFoundException(String.format("There is no user with id %d.", bookerId));
         }
         LocalDateTime currentDate = LocalDateTime.now();
+        Pageable pageable = PageRequest.of(from / size, size);
         switch (s) {
             case ALL:
-                return mapper.toList(bookingRepository.findByBookerIdOrderByStartDesc(bookerId));
+                return mapper.toList(bookingRepository.findByBookerIdOrderByStartDesc(bookerId, pageable));
             case CURRENT:
                 return mapper.toList(bookingRepository
                         .findByBookerIdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(bookerId, currentDate,
-                                currentDate));
+                                currentDate, pageable));
             case PAST:
                 return mapper.toList(bookingRepository
-                        .findByBookerIdAndEndIsBeforeOrderByEndDesc(bookerId, currentDate));
+                        .findByBookerIdAndEndIsBeforeOrderByEndDesc(bookerId, currentDate, pageable));
             case FUTURE:
                 return mapper.toList(bookingRepository
-                        .findByBookerIdAndStartIsAfterOrderByStartDesc(bookerId, currentDate));
+                        .findByBookerIdAndStartIsAfterOrderByStartDesc(bookerId, currentDate, pageable));
             case WAITING:
                 return mapper.toList(bookingRepository
-                        .findByBookerIdAndStatusOrderByStartDesc(bookerId, Status.WAITING));
+                        .findByBookerIdAndStatusOrderByStartDesc(bookerId, Status.WAITING, pageable));
             case REJECTED:
                 return mapper.toList(bookingRepository
-                        .findByBookerIdAndStatusOrderByStartDesc(bookerId, Status.REJECTED));
+                        .findByBookerIdAndStatusOrderByStartDesc(bookerId, Status.REJECTED, pageable));
             default:
                 throw new RuntimeException("Unknown state: " + state);
         }
     }
 
     @Override
-    public List<BookingDto> getAllOwner(long ownerId, String state) {
+    public List<BookingDto> getAllOwner(long ownerId, String state, int from, int size) {
         State s = State.set(state);
         userRepository.findById(ownerId)
                 .orElseThrow(() -> new NotFoundException(String.format("There is no user with id %d.", ownerId)));
@@ -114,22 +117,24 @@ public class BookingServiceImpl implements BookingService {
         if (items.isEmpty()) {
             return null;
         }
+        Pageable pageable = PageRequest.of(from / size, size);
         switch (s) {
             case ALL:
-                return mapper.toList(bookingRepository.findAllByItemIdInOrderByStartDesc(items));
+                return mapper.toList(bookingRepository.findAllByItemIdInOrderByStartDesc(items, pageable));
             case CURRENT:
                 return mapper.toList(bookingRepository
                         .findByItemIdInAndStartIsBeforeAndEndIsAfterOrderByStartDesc(items, currentDate,
-                                currentDate));
+                                currentDate, pageable));
             case PAST:
                 return mapper.toList(bookingRepository
-                        .findByItemIdInAndEndIsBefore(items, currentDate, Sort.by(Sort.Direction.DESC, "end")));
+                        .findByItemIdInAndEndIsBeforeOrderByEndDesc(items, currentDate, pageable));
             case FUTURE:
-                return mapper.toList(bookingRepository.findByItemIdInAndEndIsAfterOrderByStartDesc(items, currentDate));
+                return mapper.toList(bookingRepository.findByItemIdInAndEndIsAfterOrderByStartDesc(items, currentDate,
+                        pageable));
             case WAITING:
-                return mapper.toList(bookingRepository.findByItemIdInAndStatus(items, Status.WAITING));
+                return mapper.toList(bookingRepository.findByItemIdInAndStatus(items, Status.WAITING, pageable));
             case REJECTED:
-                return mapper.toList(bookingRepository.findByItemIdInAndStatus(items, Status.REJECTED));
+                return mapper.toList(bookingRepository.findByItemIdInAndStatus(items, Status.REJECTED, pageable));
             default:
                 throw new RuntimeException("Unknown state: " + state);
         }

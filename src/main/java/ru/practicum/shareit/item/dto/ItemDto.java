@@ -13,6 +13,7 @@ import java.util.Objects;
 @Setter
 @ToString
 @NoArgsConstructor
+@AllArgsConstructor
 public class ItemDto {
     private Long id;
     @NotBlank(groups = Create.class)
@@ -34,12 +35,14 @@ public class ItemDto {
         this.requestId = requestId;
     }
 
-    public ItemDto(Long id, String name, String description, Boolean available, List<CommentDto> comments) {
+    public ItemDto(Long id, String name, String description, Boolean available, List<CommentDto> comments,
+                   Long requestId) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.available = available;
         this.comments = comments;
+        this.requestId = requestId;
     }
 
     @Override
