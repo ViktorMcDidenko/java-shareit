@@ -7,7 +7,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.user.dto.UserDto;
-import ru.practicum.shareit.user.model.User;
 
 import java.util.List;
 
@@ -19,7 +18,6 @@ class UserServiceImplIntegrationTest {
     UserService userService;
 
     private UserDto user1;
-    private UserDto user2;
     private UserDto savedUser1;
     private UserDto savedUser2;
 
@@ -27,7 +25,7 @@ class UserServiceImplIntegrationTest {
     void setUp() {
         user1 = new UserDto(null, "name1", "ya1@mail.ru");
         savedUser1 = userService.add(user1);
-        user2 = new UserDto(null, "name2", "ya2@mail.ru");
+        UserDto user2 = new UserDto(null, "name2", "ya2@mail.ru");
         savedUser2 = userService.add(user2);
     }
 

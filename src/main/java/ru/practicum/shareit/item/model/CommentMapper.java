@@ -14,7 +14,7 @@ public class CommentMapper {
     }
 
     public Comment toComment(CommentDto commentDto, Item item, User author) {
-        return new Comment(commentDto.getText(), item, author); //убрали айди и криэйтид
+        return new Comment(commentDto.getText(), item, author);
     }
 
     public List<CommentDto> toList(List<Comment> comments) {

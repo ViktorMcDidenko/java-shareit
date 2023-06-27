@@ -34,9 +34,7 @@ class BookingServiceImplIntegrationTest {
     private User savedOwner;
     private User booker;
     private User savedBooker;
-    private Item item;
     private Item savedItem;
-    private BookingDtoCreate dto;
     private BookingDto result;
 
     @BeforeEach
@@ -45,10 +43,10 @@ class BookingServiceImplIntegrationTest {
         savedOwner = userRepository.save(owner);
         booker = new User("букер", "ya2@ya.ru"); //id2
         savedBooker = userRepository.save(booker);
-        item = new Item(owner, "вещь", "description");
+        Item item = new Item(owner, "вещь", "description");
         item.setAvailable(true);
         savedItem = itemRepository.save(item);
-        dto = new BookingDtoCreate(1L,
+        BookingDtoCreate dto = new BookingDtoCreate(1L,
                 LocalDateTime.now().plusDays(1),
                 LocalDateTime.now().plusDays(2)); //id1
         result = bookingService.add(savedBooker.getId(), dto);
@@ -117,8 +115,8 @@ class BookingServiceImplIntegrationTest {
         BookingDtoCreate currentDto = new BookingDtoCreate(1L,
                 LocalDateTime.now().minusHours(2),
                 LocalDateTime.now().plusHours(5)); //id3
-        BookingDto pastResult = bookingService.add(savedBooker.getId(), pastDto);
-        BookingDto currentResult = bookingService.add(savedBooker.getId(), currentDto);
+        bookingService.add(savedBooker.getId(), pastDto);
+        bookingService.add(savedBooker.getId(), currentDto);
 
         Item falseItem = new Item(booker, "вещьБукера", "не должна попадать в выборку");
         falseItem.setAvailable(true);

@@ -1,6 +1,5 @@
 package ru.practicum.shareit.item.service;
 
-import org.checkerframework.checker.units.qual.A;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,8 +11,6 @@ import ru.practicum.shareit.booking.service.BookingService;
 import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.model.Comment;
-import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
@@ -33,27 +30,19 @@ class ItemServiceImplIntegrationTest {
     @Autowired
     BookingService bookingService;
 
-    private User owner;
     private User savedOwner;
-    private User booker;
     private User savedBooker;
     private ItemDto itemDto;
-    private ItemDto itemDto2;
-    private ItemDto itemDto3;
     private ItemDto savedItem;
-    private ItemDto savedItem2;
-    private ItemDto savedItem3;
-    private BookingDtoCreate booking1;
-    private BookingDtoCreate booking2;
     private BookingDto futureBooking;
     private BookingDto pastBooking;
 
     @BeforeEach
     void setUp() {
-        owner = new User("owner", "ya@ya.ru"); //id1
+        User owner = new User("owner", "ya@ya.ru"); //id1
         savedOwner = userRepository.save(owner);
 
-        booker = new User("букер", "a@ya.ru"); //id2
+        User booker = new User("букер", "a@ya.ru"); //id2
         savedBooker = userRepository.save(booker);
 
         itemDto = new ItemDto();
@@ -62,25 +51,25 @@ class ItemServiceImplIntegrationTest {
         itemDto.setAvailable(true);
         savedItem = itemService.add(savedOwner.getId(), itemDto); //id1
 
-        itemDto2 = new ItemDto();
+        ItemDto itemDto2 = new ItemDto();
         itemDto2.setName("item2script");
         itemDto2.setDescription("deion2");
         itemDto2.setAvailable(true);
-        savedItem2 = itemService.add(savedOwner.getId(), itemDto2); //id2
+        itemService.add(savedOwner.getId(), itemDto2); //id2
 
-        itemDto3 = new ItemDto();
+        ItemDto itemDto3 = new ItemDto();
         itemDto3.setName("item3script");
         itemDto3.setDescription("description3");
         itemDto3.setAvailable(false);
-        savedItem3 = itemService.add(savedOwner.getId(), itemDto3); //id3
+        itemService.add(savedOwner.getId(), itemDto3); //id3
 
-        booking1 = new BookingDtoCreate(savedItem.getId(),
+        BookingDtoCreate booking1 = new BookingDtoCreate(savedItem.getId(),
                 LocalDateTime.now().plusDays(1),
                 LocalDateTime.now().plusDays(2)); //id1
         futureBooking = bookingService.add(savedBooker.getId(), booking1);
         bookingService.approve(savedOwner.getId(), futureBooking.getId(), true);
 
-        booking2 = new BookingDtoCreate(savedItem.getId(),
+        BookingDtoCreate booking2 = new BookingDtoCreate(savedItem.getId(),
                 LocalDateTime.now().minusDays(15),
                 LocalDateTime.now().minusDays(14)); //id2
         pastBooking = bookingService.add(savedBooker.getId(), booking2);

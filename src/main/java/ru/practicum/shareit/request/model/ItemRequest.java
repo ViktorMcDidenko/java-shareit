@@ -24,7 +24,7 @@ public class ItemRequest {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
     String description;
-    @ManyToOne(optional = false) //попробовать переделать в lazy
+    @ManyToOne(optional = false)
     @JoinColumn(name = "requestor_id")
     User requestor;
     @CreationTimestamp

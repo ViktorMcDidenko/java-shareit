@@ -23,29 +23,23 @@ class ItemRequestServiceImplIntegrationTest {
     @Autowired
     UserRepository userRepository;
 
-    private User requestor;
     private User savedRequestor;
     private User otherRequestor;
-    private User savedOtherRequestor;
     private ItemRequestDto itemRequestDto;
     private ItemRequestDto savedItemRequestDto;
-    private ItemRequestDto itemRequestDto2;
-    private ItemRequestDto savedItemRequestDto2;
-    private ItemRequestDto itemRequestDto3;
-    private ItemRequestDto savedItemRequestDto3;
 
     @BeforeEach
     void setUp() {
-        requestor = new User("requestor", "ya@ya.ru"); //id1
+        User requestor = new User("requestor", "ya@ya.ru"); //id1
         savedRequestor = userRepository.save(requestor);
         itemRequestDto = new ItemRequestDto(null, "description", null, null);
         savedItemRequestDto = itemRequestService.add(savedRequestor.getId(), itemRequestDto);
-        itemRequestDto2 = new ItemRequestDto(null, "description2", null, null);
-        savedItemRequestDto2 = itemRequestService.add(savedRequestor.getId(), itemRequestDto2);
+        ItemRequestDto itemRequestDto2 = new ItemRequestDto(null, "description2", null, null);
+        itemRequestService.add(savedRequestor.getId(), itemRequestDto2);
         otherRequestor = new User("requestor2", "ya2@ya.ru"); //id2
-        savedOtherRequestor = userRepository.save(otherRequestor);
-        itemRequestDto3 = new ItemRequestDto(null, "description3", null, null);
-        savedItemRequestDto3 = itemRequestService.add(savedOtherRequestor.getId(), itemRequestDto3);
+        User savedOtherRequestor = userRepository.save(otherRequestor);
+        ItemRequestDto itemRequestDto3 = new ItemRequestDto(null, "description3", null, null);
+        itemRequestService.add(savedOtherRequestor.getId(), itemRequestDto3);
     }
 
     @Test

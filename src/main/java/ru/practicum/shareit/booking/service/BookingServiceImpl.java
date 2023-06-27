@@ -3,7 +3,6 @@ package ru.practicum.shareit.booking.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingDtoCreate;
@@ -128,7 +127,7 @@ public class BookingServiceImpl implements BookingService {
             case PAST:
                 return mapper.toList(bookingRepository
                         .findByItemIdInAndEndIsBeforeOrderByEndDesc(items, currentDate, pageable));
-            case FUTURE: //изменили энд на старт
+            case FUTURE:
                 return mapper.toList(bookingRepository.findByItemIdInAndStartIsAfterOrderByStartDesc(items, currentDate,
                         pageable));
             case WAITING:
