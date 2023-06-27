@@ -8,11 +8,14 @@ import org.springframework.test.annotation.DirtiesContext;
 import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.user.dto.UserDto;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
+@Transactional
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class UserServiceImplTest {
     @Autowired
     UserService userService;
@@ -30,14 +33,12 @@ class UserServiceImplTest {
     }
 
     @Test
-    @DirtiesContext
     void add() {
         assertNotNull(savedUser1.getId());
         assertEquals(savedUser1.getEmail(), user1.getEmail());
     }
 
     @Test
-    @DirtiesContext
     void update() {
         savedUser1.setName("updatedName");
 
@@ -49,7 +50,6 @@ class UserServiceImplTest {
     }
 
     @Test
-    @DirtiesContext
     void getAllAndDelete() {
         List<UserDto> result = userService.getAll();
 
@@ -66,7 +66,6 @@ class UserServiceImplTest {
     }
 
     @Test
-    @DirtiesContext
     void getById() {
         NotFoundException exception = assertThrows(
                 NotFoundException.class,
