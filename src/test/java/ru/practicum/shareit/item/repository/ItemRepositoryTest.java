@@ -31,14 +31,14 @@ class ItemRepositoryTest {
         item3.setAvailable(false);
 
         em.persistAndFlush(user);
-        repository.save(item1);
-        repository.save(item2);
-        repository.save(item3);
+        long id1 = repository.save(item1).getId();
+        long id2 = repository.save(item2).getId();
+        long id3 = repository.save(item3).getId();
 
         List<Item> result = repository.search("поиск", PageRequest.of(0, 10));
 
         assertEquals(2, result.size());
-        assertEquals(1, result.get(0).getId());
-        assertEquals(2, result.get(1).getId());
+        assertEquals(id1, result.get(0).getId());
+        assertEquals(id2, result.get(1).getId());
     }
 }
