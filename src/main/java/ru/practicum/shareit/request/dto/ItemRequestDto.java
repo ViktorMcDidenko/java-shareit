@@ -9,7 +9,7 @@ import java.util.List;
 
 @Value
 public class ItemRequestDto {
-    long id;
+    Long id;
     @NotBlank
     String description;
     LocalDateTime created;

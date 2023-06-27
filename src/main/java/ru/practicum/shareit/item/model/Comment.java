@@ -24,4 +24,10 @@ public class Comment {
     private User author;
     @CreationTimestamp
     private LocalDateTime created;
+
+    public Comment(String text, Item item, User author) {
+        this.text = text;
+        this.item = item;
+        this.author = author;
+    }
 }

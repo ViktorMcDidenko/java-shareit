@@ -128,8 +128,8 @@ public class BookingServiceImpl implements BookingService {
             case PAST:
                 return mapper.toList(bookingRepository
                         .findByItemIdInAndEndIsBeforeOrderByEndDesc(items, currentDate, pageable));
-            case FUTURE:
-                return mapper.toList(bookingRepository.findByItemIdInAndEndIsAfterOrderByStartDesc(items, currentDate,
+            case FUTURE: //изменили энд на старт
+                return mapper.toList(bookingRepository.findByItemIdInAndStartIsAfterOrderByStartDesc(items, currentDate,
                         pageable));
             case WAITING:
                 return mapper.toList(bookingRepository.findByItemIdInAndStatus(items, Status.WAITING, pageable));

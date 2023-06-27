@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 
 @Value
 public class BookingDto {
-    long id;
+    Long id; //тут изменили long на Long
     LocalDateTime start;
     LocalDateTime end;
     Status status;

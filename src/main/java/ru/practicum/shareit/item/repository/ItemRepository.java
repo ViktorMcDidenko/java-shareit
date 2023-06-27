@@ -13,7 +13,7 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
 
     List<Item> findByOwnerIdIs(long idSearch, Pageable pageable);
 
-    @Query("select i from Item i where upper(i.name) like upper(concat('%', :text, '%')) " +
-            "or upper(i.description) like upper(concat('%', :text, '%')) and (i.available = true)")
+    @Query("select i from Item i where (i.available = true) and (upper(i.name) like upper(concat('%', :text, '%')) " +
+            "or upper(i.description) like upper(concat('%', :text, '%')))")
     List<Item> search(@Param("text") String text, Pageable pageable);
 }

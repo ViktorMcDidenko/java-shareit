@@ -22,4 +22,10 @@ public class Item {
     private Boolean available;
     @Column(name = "request_id")
     private Long requestId;
+
+    public Item(User owner, String name, String description) {
+        this.owner = owner;
+        this.name = name;
+        this.description = description;
+    }
 }
