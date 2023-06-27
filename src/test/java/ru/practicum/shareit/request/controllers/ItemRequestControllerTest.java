@@ -31,7 +31,7 @@ class ItemRequestControllerTest {
     @Autowired
     ObjectMapper objectMapper;
 
-    private final long USER_ID = 1;
+    private static final long USER_ID = 1;
     private ItemRequestDto createRequest;
     private ItemRequestDto returnRequest;
     private List<ItemRequestDto> dtoList;

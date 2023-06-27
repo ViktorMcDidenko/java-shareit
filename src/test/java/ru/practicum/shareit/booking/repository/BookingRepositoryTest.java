@@ -100,7 +100,7 @@ class BookingRepositoryTest {
     @Test
     void getLastBooking() {
         Optional<Booking> lastBookingResult = bookingRepository.getLastBooking(1L, LocalDateTime.now());
-        assert(lastBookingResult.isPresent());
+        assert (lastBookingResult.isPresent());
 
         Booking bookingResult = lastBookingResult.get();
         assertEquals(1, bookingResult.getItem().getId());
@@ -110,7 +110,7 @@ class BookingRepositoryTest {
     @Test
     void getNextBooking() {
         Optional<Booking> futureBookingResult = bookingRepository.getNextBooking(1L, LocalDateTime.now());
-        assert(futureBookingResult.isPresent());
+        assert (futureBookingResult.isPresent());
 
         Booking bookingResult = futureBookingResult.get();
         assertEquals(1, bookingResult.getItem().getId());

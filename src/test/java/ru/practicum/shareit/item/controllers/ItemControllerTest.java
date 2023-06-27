@@ -32,7 +32,7 @@ class ItemControllerTest {
     @Autowired
     ObjectMapper objectMapper;
 
-    private final long USER_ID = 1L;
+    private static final long USER_ID = 1L;
     private ItemDto itemDto = new ItemDto();
     private ItemDto dtoReturn = new ItemDto();
     private List<ItemDto> dtoList;
