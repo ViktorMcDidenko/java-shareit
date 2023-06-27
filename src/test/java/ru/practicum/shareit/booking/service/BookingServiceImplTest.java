@@ -20,7 +20,7 @@ import java.util.stream.IntStream;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
-class BookingServiceImplIntegrationTest {
+class BookingServiceImplTest {
     @Autowired
     BookingService bookingService;
 
@@ -60,13 +60,15 @@ class BookingServiceImplIntegrationTest {
         assertEquals(savedBooker.getId(), result.getBooker().getId());
         assertEquals(savedItem.getId(), result.getItem().getId());
 
-        List<BookingDto> bookerWaitingResult = bookingService.getAllBooker(savedBooker.getId(), "WAITING", 0, 10);
+        List<BookingDto> bookerWaitingResult = bookingService.getAllBooker(savedBooker.getId(),"WAITING",
+                0, 10);
 
         assertEquals(1, bookerWaitingResult.size());
         assertEquals(result.getId(), bookerWaitingResult.get(0).getId());
         assertEquals(Status.WAITING, bookerWaitingResult.get(0).getStatus());
 
-        List<BookingDto> ownerWaitingResult = bookingService.getAllOwner(savedOwner.getId(),"WAITING", 0, 10);
+        List<BookingDto> ownerWaitingResult = bookingService.getAllOwner(savedOwner.getId(),"WAITING",
+                0, 10);
 
         assertEquals(1, ownerWaitingResult.size());
         assertEquals(result.getId(), ownerWaitingResult.get(0).getId());
@@ -86,13 +88,15 @@ class BookingServiceImplIntegrationTest {
         assertEquals(result.getId(), disapprovedResult.getId());
         assertEquals(Status.REJECTED, disapprovedResult.getStatus());
 
-        List<BookingDto> bookerRejectedResult = bookingService.getAllBooker(savedBooker.getId(), "REJECTED", 0, 10);
+        List<BookingDto> bookerRejectedResult = bookingService.getAllBooker(savedBooker.getId(), "REJECTED",
+                0, 10);
 
         assertEquals(1, bookerRejectedResult.size());
         assertEquals(result.getId(), bookerRejectedResult.get(0).getId());
         assertEquals(Status.REJECTED, bookerRejectedResult.get(0).getStatus());
 
-        List<BookingDto> ownerRejectedResult = bookingService.getAllOwner(savedOwner.getId(), "REJECTED", 0, 10);
+        List<BookingDto> ownerRejectedResult = bookingService.getAllOwner(savedOwner.getId(), "REJECTED",
+                0, 10);
 
         assertEquals(1, ownerRejectedResult.size());
         assertEquals(result.getId(), ownerRejectedResult.get(0).getId());
@@ -157,7 +161,8 @@ class BookingServiceImplIntegrationTest {
         assertEquals(3, allOwner.get(1).getId());
         assertEquals(2, allOwner.get(2).getId());
 
-        IntStream.range(0, allOwner.size()).forEach(i -> assertEquals(savedBooker.getId(), allOwner.get(i).getBooker().getId()));
+        IntStream.range(0, allOwner.size()).forEach(i -> assertEquals(savedBooker.getId(),
+                allOwner.get(i).getBooker().getId()));
 
         List<BookingDto> currentOwner = bookingService.getAllOwner(savedOwner.getId(), "CURRENT", 0, 10);
 
