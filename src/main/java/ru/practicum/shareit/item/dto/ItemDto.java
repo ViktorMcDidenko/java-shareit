@@ -14,6 +14,7 @@ import java.util.Objects;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
+@Generated
 public class ItemDto {
     private Long id;
     @NotBlank(groups = Create.class)
