@@ -4,6 +4,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.annotation.DirtiesContext;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingDtoCreate;
@@ -36,6 +38,7 @@ class ItemServiceImplTest {
     private ItemDto savedItem;
     private BookingDto futureBooking;
     private BookingDto pastBooking;
+    private final static Pageable PAGEABLE = PageRequest.of(0, 10);
 
     @BeforeEach
     void setUp() {
@@ -127,11 +130,11 @@ class ItemServiceImplTest {
     @Test
     @DirtiesContext
     void get() {
-        List<ItemDto> bookerResult = itemService.get(savedBooker.getId(), 0, 10);
+        List<ItemDto> bookerResult = itemService.get(savedBooker.getId(), PAGEABLE);
 
         assertTrue(bookerResult.isEmpty());
 
-        List<ItemDto> ownerResult = itemService.get(savedOwner.getId(), 0, 10);
+        List<ItemDto> ownerResult = itemService.get(savedOwner.getId(), PAGEABLE);
 
         assertEquals(3, ownerResult.size());
         assertEquals(1, ownerResult.get(0).getId());
@@ -142,7 +145,7 @@ class ItemServiceImplTest {
     @Test
     @DirtiesContext
     void search() {
-        List<ItemDto> result = itemService.search("script", 0, 10);
+        List<ItemDto> result = itemService.search("script", PAGEABLE);
 
         assertEquals(2, result.size());
         assertEquals(1, result.get(0).getId());

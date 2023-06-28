@@ -7,6 +7,8 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import ru.practicum.shareit.item.dto.CommentDto;
@@ -36,6 +38,7 @@ class ItemControllerTest {
     private ItemDto itemDto = new ItemDto();
     private ItemDto dtoReturn = new ItemDto();
     private List<ItemDto> dtoList;
+    private final static Pageable PAGEABLE = PageRequest.of(0, 10);
 
     @BeforeEach
     void setUp() {
@@ -118,7 +121,7 @@ class ItemControllerTest {
 
     @Test
     void get() throws Exception {
-        when(itemService.get(USER_ID, 0, 10)).thenReturn(dtoList);
+        when(itemService.get(USER_ID, PAGEABLE)).thenReturn(dtoList);
 
         String result = mockMvc.perform(MockMvcRequestBuilders.get("/items", 0, 10)
                         .header("X-Sharer-User-Id", USER_ID))
@@ -132,7 +135,7 @@ class ItemControllerTest {
 
     @Test
     void getInvalidParams() throws Exception {
-        when(itemService.get(USER_ID, 0, 10)).thenReturn(dtoList);
+        when(itemService.get(USER_ID, PAGEABLE)).thenReturn(dtoList);
 
         mockMvc.perform(MockMvcRequestBuilders.get("/items", 0, 10)
                         .param("from", "-1")
@@ -140,12 +143,12 @@ class ItemControllerTest {
                         .header("X-Sharer-User-Id", USER_ID))
                 .andExpect(status().isBadRequest());
 
-        verify(itemService, never()).get(Mockito.anyLong(), Mockito.anyInt(), Mockito.anyInt());
+        verify(itemService, never()).get(Mockito.anyLong(), Mockito.any(Pageable.class));
     }
 
     @Test
     void search() throws Exception {
-        when(itemService.search(Mockito.anyString(), Mockito.anyInt(), Mockito.anyInt())).thenReturn(dtoList);
+        when(itemService.search(Mockito.anyString(), Mockito.any(Pageable.class))).thenReturn(dtoList);
 
         String result = mockMvc.perform(MockMvcRequestBuilders.get("/items/search", 0, 10)
                         .header("X-Sharer-User-Id", USER_ID)

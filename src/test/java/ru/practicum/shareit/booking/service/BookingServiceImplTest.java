@@ -4,6 +4,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.annotation.DirtiesContext;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingDtoCreate;
@@ -36,6 +38,7 @@ class BookingServiceImplTest {
     private User savedBooker;
     private Item savedItem;
     private BookingDto result;
+    private final static Pageable PAGEABLE = PageRequest.of(0, 10);
 
     @BeforeEach
     void setUp() {
@@ -61,14 +64,14 @@ class BookingServiceImplTest {
         assertEquals(savedItem.getId(), result.getItem().getId());
 
         List<BookingDto> bookerWaitingResult = bookingService.getAllBooker(savedBooker.getId(),"WAITING",
-                0, 10);
+                PAGEABLE);
 
         assertEquals(1, bookerWaitingResult.size());
         assertEquals(result.getId(), bookerWaitingResult.get(0).getId());
         assertEquals(Status.WAITING, bookerWaitingResult.get(0).getStatus());
 
         List<BookingDto> ownerWaitingResult = bookingService.getAllOwner(savedOwner.getId(),"WAITING",
-                0, 10);
+                PAGEABLE);
 
         assertEquals(1, ownerWaitingResult.size());
         assertEquals(result.getId(), ownerWaitingResult.get(0).getId());
@@ -89,14 +92,14 @@ class BookingServiceImplTest {
         assertEquals(Status.REJECTED, disapprovedResult.getStatus());
 
         List<BookingDto> bookerRejectedResult = bookingService.getAllBooker(savedBooker.getId(), "REJECTED",
-                0, 10);
+                PAGEABLE);
 
         assertEquals(1, bookerRejectedResult.size());
         assertEquals(result.getId(), bookerRejectedResult.get(0).getId());
         assertEquals(Status.REJECTED, bookerRejectedResult.get(0).getStatus());
 
         List<BookingDto> ownerRejectedResult = bookingService.getAllOwner(savedOwner.getId(), "REJECTED",
-                0, 10);
+                PAGEABLE);
 
         assertEquals(1, ownerRejectedResult.size());
         assertEquals(result.getId(), ownerRejectedResult.get(0).getId());
@@ -130,7 +133,7 @@ class BookingServiceImplTest {
                 LocalDateTime.now().plusDays(2));
         bookingService.add(owner.getId(), falseDto);
 
-        List<BookingDto> all = bookingService.getAllBooker(savedBooker.getId(), "ALL", 0, 10);
+        List<BookingDto> all = bookingService.getAllBooker(savedBooker.getId(), "ALL", PAGEABLE);
 
         assertEquals(3, all.size());
         assertEquals(1, all.get(0).getId());
@@ -139,22 +142,22 @@ class BookingServiceImplTest {
 
         IntStream.range(0, all.size()).forEach(i -> assertEquals(savedBooker.getId(), all.get(i).getBooker().getId()));
 
-        List<BookingDto> current = bookingService.getAllBooker(savedBooker.getId(), "CURRENT", 0, 10);
+        List<BookingDto> current = bookingService.getAllBooker(savedBooker.getId(), "CURRENT", PAGEABLE);
 
         assertEquals(1, current.size());
         assertEquals(3, current.get(0).getId());
 
-        List<BookingDto> past = bookingService.getAllBooker(savedBooker.getId(), "PAST", 0, 10);
+        List<BookingDto> past = bookingService.getAllBooker(savedBooker.getId(), "PAST", PAGEABLE);
 
         assertEquals(1, past.size());
         assertEquals(2, past.get(0).getId());
 
-        List<BookingDto> future = bookingService.getAllBooker(savedBooker.getId(), "FUTURE", 0, 10);
+        List<BookingDto> future = bookingService.getAllBooker(savedBooker.getId(), "FUTURE", PAGEABLE);
 
         assertEquals(1, future.size());
         assertEquals(1, future.get(0).getId());
 
-        List<BookingDto> allOwner = bookingService.getAllOwner(savedOwner.getId(), "ALL", 0, 10);
+        List<BookingDto> allOwner = bookingService.getAllOwner(savedOwner.getId(), "ALL", PAGEABLE);
 
         assertEquals(3, allOwner.size());
         assertEquals(1, allOwner.get(0).getId());
@@ -164,17 +167,17 @@ class BookingServiceImplTest {
         IntStream.range(0, allOwner.size()).forEach(i -> assertEquals(savedBooker.getId(),
                 allOwner.get(i).getBooker().getId()));
 
-        List<BookingDto> currentOwner = bookingService.getAllOwner(savedOwner.getId(), "CURRENT", 0, 10);
+        List<BookingDto> currentOwner = bookingService.getAllOwner(savedOwner.getId(), "CURRENT", PAGEABLE);
 
         assertEquals(1, currentOwner.size());
         assertEquals(3, currentOwner.get(0).getId());
 
-        List<BookingDto> pastOwner = bookingService.getAllOwner(savedOwner.getId(), "PAST", 0, 10);
+        List<BookingDto> pastOwner = bookingService.getAllOwner(savedOwner.getId(), "PAST", PAGEABLE);
 
         assertEquals(1, pastOwner.size());
         assertEquals(2, pastOwner.get(0).getId());
 
-        List<BookingDto> futureOwner = bookingService.getAllOwner(savedOwner.getId(), "FUTURE", 0, 10);
+        List<BookingDto> futureOwner = bookingService.getAllOwner(savedOwner.getId(), "FUTURE", PAGEABLE);
 
         for (BookingDto b : futureOwner) {
             System.out.println(b.getId());

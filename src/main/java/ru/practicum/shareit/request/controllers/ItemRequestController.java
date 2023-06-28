@@ -1,6 +1,8 @@
 package ru.practicum.shareit.request.controllers;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
@@ -33,7 +35,8 @@ public class ItemRequestController {
     public List<ItemRequestDto> getTheirs(@RequestHeader("X-Sharer-User-Id") long id,
                                          @RequestParam(defaultValue = "0") @PositiveOrZero int from,
                                          @RequestParam(defaultValue = "10") @Positive int size) {
-        return service.getTheirs(id, from, size);
+        Pageable pageable = PageRequest.of(from / size, size);
+        return service.getTheirs(id, pageable);
     }
 
     @GetMapping("/{requestId}")

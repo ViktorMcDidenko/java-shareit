@@ -1,6 +1,8 @@
 package ru.practicum.shareit.item.controllers;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.Create;
@@ -41,14 +43,16 @@ public class ItemController {
     public List<ItemDto> get(@RequestHeader("X-Sharer-User-Id") long userId,
                              @RequestParam(defaultValue = "0") @PositiveOrZero int from,
                              @RequestParam(defaultValue = "10") @Positive int size) {
-        return service.get(userId, from, size);
+        Pageable pageable = PageRequest.of(from / size, size);
+        return service.get(userId, pageable);
     }
 
     @GetMapping("/search")
     public List<ItemDto> search(@RequestParam(required = false) String text,
                                 @RequestParam(defaultValue = "0") @PositiveOrZero int from,
                                 @RequestParam(defaultValue = "10") @Positive int size) {
-        return service.search(text, from, size);
+        Pageable pageable = PageRequest.of(from / size, size);
+        return service.search(text, pageable);
     }
 
     @PostMapping("/{id}/comment")

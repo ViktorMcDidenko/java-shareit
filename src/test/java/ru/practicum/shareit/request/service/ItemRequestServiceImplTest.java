@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.annotation.DirtiesContext;
 import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
@@ -66,7 +67,7 @@ class ItemRequestServiceImplTest {
     @DirtiesContext
     void getTheirs() {
         List<ItemRequestDto> requestorResultByOtherRequestor =
-                itemRequestService.getTheirs(otherRequestor.getId(), 0, 10);
+                itemRequestService.getTheirs(otherRequestor.getId(), PageRequest.of(0, 10));
 
         assertEquals(2, requestorResultByOtherRequestor.size());
         assertEquals(2, requestorResultByOtherRequestor.get(0).getId());

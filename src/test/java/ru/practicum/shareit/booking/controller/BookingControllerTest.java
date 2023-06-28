@@ -7,6 +7,8 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingDtoCreate;
@@ -40,6 +42,7 @@ class BookingControllerTest {
     private BookingDtoCreate dtoCreate;
     private BookingDto dtoReturn;
     private BookingDto dtoApproved;
+    private final static Pageable PAGEABLE = PageRequest.of(0, 10);
 
     @BeforeEach
     void setUp() {
@@ -117,7 +120,7 @@ class BookingControllerTest {
 
     @Test
     void getAllBooker() throws Exception {
-        when(bookingService.getAllBooker(booker.getId(), State.ALL.toString(), 0, 10))
+        when(bookingService.getAllBooker(booker.getId(), State.ALL.toString(), PAGEABLE))
                 .thenReturn(List.of(dtoReturn));
 
         String result = mockMvc.perform(get("/bookings")
@@ -134,8 +137,8 @@ class BookingControllerTest {
     }
 
     @Test
-    void getAllBookerInvaidParams() throws Exception {
-        when(bookingService.getAllBooker(booker.getId(), State.ALL.toString(), 0, 10))
+    void getAllBookerInvalidParams() throws Exception {
+        when(bookingService.getAllBooker(booker.getId(), State.ALL.toString(), PAGEABLE))
                 .thenReturn(List.of(dtoReturn));
 
         mockMvc.perform(get("/bookings")
@@ -146,12 +149,12 @@ class BookingControllerTest {
                 .andExpect(status().isBadRequest());
 
         verify(bookingService,
-                never()).getAllBooker(Mockito.anyLong(), Mockito.anyString(), Mockito.anyInt(), Mockito.anyInt());
+                never()).getAllBooker(Mockito.anyLong(), Mockito.anyString(), Mockito.any(Pageable.class));
     }
 
     @Test
     void getAllOwner() throws Exception {
-        when(bookingService.getAllOwner(owner.getId(), State.ALL.toString(), 0, 10))
+        when(bookingService.getAllOwner(owner.getId(), State.ALL.toString(), PAGEABLE))
                 .thenReturn(List.of(dtoReturn));
 
         String result = mockMvc.perform(get("/bookings/owner")

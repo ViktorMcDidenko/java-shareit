@@ -1,7 +1,6 @@
 package ru.practicum.shareit.booking.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.BookingDto;
@@ -75,13 +74,12 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingDto> getAllBooker(long bookerId, String state, int from, int size) {
+    public List<BookingDto> getAllBooker(long bookerId, String state, Pageable pageable) {
         State s = State.set(state);
         if (!userRepository.existsById(bookerId)) {
             throw new NotFoundException(String.format("There is no user with id %d.", bookerId));
         }
         LocalDateTime currentDate = LocalDateTime.now();
-        Pageable pageable = PageRequest.of(from / size, size);
         switch (s) {
             case ALL:
                 return mapper.toList(bookingRepository.findByBookerIdOrderByStartDesc(bookerId, pageable));
@@ -107,7 +105,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingDto> getAllOwner(long ownerId, String state, int from, int size) {
+    public List<BookingDto> getAllOwner(long ownerId, String state, Pageable pageable) {
         State s = State.set(state);
         userRepository.findById(ownerId)
                 .orElseThrow(() -> new NotFoundException(String.format("There is no user with id %d.", ownerId)));
@@ -116,7 +114,6 @@ public class BookingServiceImpl implements BookingService {
         if (items.isEmpty()) {
             return null;
         }
-        Pageable pageable = PageRequest.of(from / size, size);
         switch (s) {
             case ALL:
                 return mapper.toList(bookingRepository.findAllByItemIdInOrderByStartDesc(items, pageable));

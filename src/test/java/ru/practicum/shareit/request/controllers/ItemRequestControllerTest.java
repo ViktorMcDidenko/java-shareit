@@ -7,6 +7,7 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
@@ -91,7 +92,7 @@ class ItemRequestControllerTest {
 
     @Test
     void getTheirs() throws Exception {
-        when(itemRequestService.getTheirs(Mockito.anyLong(), Mockito.anyInt(), Mockito.anyInt())).thenReturn(dtoList);
+        when(itemRequestService.getTheirs(Mockito.anyLong(), Mockito.any(Pageable.class))).thenReturn(dtoList);
 
         String result = mockMvc.perform(MockMvcRequestBuilders.get("/requests/all")
                         .contentType("application/json")
@@ -106,7 +107,7 @@ class ItemRequestControllerTest {
 
     @Test
     void getTheirsInvalidParams() throws Exception {
-        when(itemRequestService.getTheirs(Mockito.anyLong(), Mockito.anyInt(), Mockito.anyInt())).thenReturn(dtoList);
+        when(itemRequestService.getTheirs(Mockito.anyLong(),Mockito.any(Pageable.class))).thenReturn(dtoList);
 
         mockMvc.perform(MockMvcRequestBuilders.get("/requests/all")
                         .contentType("application/json")
@@ -115,7 +116,7 @@ class ItemRequestControllerTest {
                         .header("X-Sharer-User-Id", USER_ID))
                 .andExpect(status().isBadRequest());
 
-        verify(itemRequestService, never()).getTheirs(Mockito.anyLong(), Mockito.anyInt(), Mockito.anyInt());
+        verify(itemRequestService, never()).getTheirs(Mockito.anyLong(), Mockito.any(Pageable.class));
     }
 
     @Test
