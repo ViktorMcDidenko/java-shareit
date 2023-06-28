@@ -23,6 +23,7 @@ import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.model.UserMapper;
 import ru.practicum.shareit.user.service.UserService;
 
+import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -88,6 +89,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    @Transactional
     public List<ItemDto> get(long userId, Pageable pageable) {
         List<Item> items = itemRepository.findByOwnerIdIs(userId, pageable);
         if (items.isEmpty()) {
@@ -128,6 +130,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    @Transactional
     public CommentDto addComment(long userId, CommentDto commentDto, long itemId) {
         List<Booking> bookings = bookingRepository
                 .findByBookerIdAndItemIdAndStatusAndEndIsBefore(userId, itemId, Status.APPROVED, LocalDateTime.now());

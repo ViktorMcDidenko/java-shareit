@@ -16,6 +16,7 @@ import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
+import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
@@ -50,10 +51,13 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
+    @Transactional
     public BookingDto approve(long ownerId, long bookingId, boolean approved) {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new NotFoundException(String.format("There is no booking with id %d.", bookingId)));
-        if (booking.getItem().getOwner().getId() != ownerId) {
+        Item item = booking.getItem();
+        User owner = item.getOwner();
+        if (owner.getId() != ownerId) {
             throw new NotFoundException("You do not have rights to edit this booking.");
         }
         if (booking.getStatus().equals(Status.APPROVED)) {
@@ -64,6 +68,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
+    @Transactional
     public BookingDto getById(long userId, long bookingId) {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new NotFoundException(String.format("There is no booking with id %d.", bookingId)));
