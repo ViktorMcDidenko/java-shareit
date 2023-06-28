@@ -38,7 +38,7 @@ class ItemControllerTest {
     private ItemDto itemDto = new ItemDto();
     private ItemDto dtoReturn = new ItemDto();
     private List<ItemDto> dtoList;
-    private final static Pageable PAGEABLE = PageRequest.of(0, 10);
+    private static final Pageable PAGEABLE = PageRequest.of(0, 10);
 
     @BeforeEach
     void setUp() {

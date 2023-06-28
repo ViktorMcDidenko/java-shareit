@@ -38,7 +38,7 @@ class ItemServiceImplTest {
     private ItemDto savedItem;
     private BookingDto futureBooking;
     private BookingDto pastBooking;
-    private final static Pageable PAGEABLE = PageRequest.of(0, 10);
+    private static final Pageable PAGEABLE = PageRequest.of(0, 10);
 
     @BeforeEach
     void setUp() {

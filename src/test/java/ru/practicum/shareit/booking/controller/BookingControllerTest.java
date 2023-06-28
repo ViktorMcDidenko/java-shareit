@@ -42,7 +42,7 @@ class BookingControllerTest {
     private BookingDtoCreate dtoCreate;
     private BookingDto dtoReturn;
     private BookingDto dtoApproved;
-    private final static Pageable PAGEABLE = PageRequest.of(0, 10);
+    private static final Pageable PAGEABLE = PageRequest.of(0, 10);
 
     @BeforeEach
     void setUp() {
