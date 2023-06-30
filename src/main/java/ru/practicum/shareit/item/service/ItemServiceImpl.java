@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.BookingItemDto;
@@ -22,6 +23,7 @@ import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.model.UserMapper;
 import ru.practicum.shareit.user.service.UserService;
 
+import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -87,8 +89,9 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemDto> get(long userId) {
-        List<Item> items = itemRepository.findByOwnerIdIs(userId);
+    @Transactional
+    public List<ItemDto> get(long userId, Pageable pageable) {
+        List<Item> items = itemRepository.findByOwnerIdIs(userId, pageable);
         if (items.isEmpty()) {
             return Collections.emptyList();
         }
@@ -119,14 +122,15 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemDto> search(String text) {
+    public List<ItemDto> search(String text, Pageable pageable) {
         if (text.isBlank()) {
             return Collections.emptyList();
         }
-        return itemMapper.toDtoList(itemRepository.search(text));
+        return itemMapper.toDtoList(itemRepository.search(text, pageable));
     }
 
     @Override
+    @Transactional
     public CommentDto addComment(long userId, CommentDto commentDto, long itemId) {
         List<Booking> bookings = bookingRepository
                 .findByBookerIdAndItemIdAndStatusAndEndIsBefore(userId, itemId, Status.APPROVED, LocalDateTime.now());
@@ -134,7 +138,6 @@ public class ItemServiceImpl implements ItemService {
             throw new RuntimeException("You can not leave your comment for item with id " + itemId);
         }
         Booking booking = bookings.get(0);
-        //commentDto.setCreated(LocalDateTime.now());
         Comment comment = commentRepository
                 .save(commentMapper.toComment(commentDto, booking.getItem(), booking.getBooker()));
         return commentMapper.toDto(comment);

@@ -1,7 +1,7 @@
 package ru.practicum.shareit.booking.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingDtoCreate;
@@ -16,6 +16,7 @@ import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
+import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
@@ -50,10 +51,13 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
+    @Transactional
     public BookingDto approve(long ownerId, long bookingId, boolean approved) {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new NotFoundException(String.format("There is no booking with id %d.", bookingId)));
-        if (booking.getItem().getOwner().getId() != ownerId) {
+        Item item = booking.getItem();
+        User owner = item.getOwner();
+        if (owner.getId() != ownerId) {
             throw new NotFoundException("You do not have rights to edit this booking.");
         }
         if (booking.getStatus().equals(Status.APPROVED)) {
@@ -64,6 +68,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
+    @Transactional
     public BookingDto getById(long userId, long bookingId) {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new NotFoundException(String.format("There is no booking with id %d.", bookingId)));
@@ -74,7 +79,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingDto> getAllBooker(long bookerId, String state) {
+    public List<BookingDto> getAllBooker(long bookerId, String state, Pageable pageable) {
         State s = State.set(state);
         if (!userRepository.existsById(bookerId)) {
             throw new NotFoundException(String.format("There is no user with id %d.", bookerId));
@@ -82,30 +87,30 @@ public class BookingServiceImpl implements BookingService {
         LocalDateTime currentDate = LocalDateTime.now();
         switch (s) {
             case ALL:
-                return mapper.toList(bookingRepository.findByBookerIdOrderByStartDesc(bookerId));
+                return mapper.toList(bookingRepository.findByBookerIdOrderByStartDesc(bookerId, pageable));
             case CURRENT:
                 return mapper.toList(bookingRepository
                         .findByBookerIdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(bookerId, currentDate,
-                                currentDate));
+                                currentDate, pageable));
             case PAST:
                 return mapper.toList(bookingRepository
-                        .findByBookerIdAndEndIsBeforeOrderByEndDesc(bookerId, currentDate));
+                        .findByBookerIdAndEndIsBeforeOrderByEndDesc(bookerId, currentDate, pageable));
             case FUTURE:
                 return mapper.toList(bookingRepository
-                        .findByBookerIdAndStartIsAfterOrderByStartDesc(bookerId, currentDate));
+                        .findByBookerIdAndStartIsAfterOrderByStartDesc(bookerId, currentDate, pageable));
             case WAITING:
                 return mapper.toList(bookingRepository
-                        .findByBookerIdAndStatusOrderByStartDesc(bookerId, Status.WAITING));
+                        .findByBookerIdAndStatusOrderByStartDesc(bookerId, Status.WAITING, pageable));
             case REJECTED:
                 return mapper.toList(bookingRepository
-                        .findByBookerIdAndStatusOrderByStartDesc(bookerId, Status.REJECTED));
+                        .findByBookerIdAndStatusOrderByStartDesc(bookerId, Status.REJECTED, pageable));
             default:
                 throw new RuntimeException("Unknown state: " + state);
         }
     }
 
     @Override
-    public List<BookingDto> getAllOwner(long ownerId, String state) {
+    public List<BookingDto> getAllOwner(long ownerId, String state, Pageable pageable) {
         State s = State.set(state);
         userRepository.findById(ownerId)
                 .orElseThrow(() -> new NotFoundException(String.format("There is no user with id %d.", ownerId)));
@@ -116,20 +121,21 @@ public class BookingServiceImpl implements BookingService {
         }
         switch (s) {
             case ALL:
-                return mapper.toList(bookingRepository.findAllByItemIdInOrderByStartDesc(items));
+                return mapper.toList(bookingRepository.findAllByItemIdInOrderByStartDesc(items, pageable));
             case CURRENT:
                 return mapper.toList(bookingRepository
                         .findByItemIdInAndStartIsBeforeAndEndIsAfterOrderByStartDesc(items, currentDate,
-                                currentDate));
+                                currentDate, pageable));
             case PAST:
                 return mapper.toList(bookingRepository
-                        .findByItemIdInAndEndIsBefore(items, currentDate, Sort.by(Sort.Direction.DESC, "end")));
+                        .findByItemIdInAndEndIsBeforeOrderByEndDesc(items, currentDate, pageable));
             case FUTURE:
-                return mapper.toList(bookingRepository.findByItemIdInAndEndIsAfterOrderByStartDesc(items, currentDate));
+                return mapper.toList(bookingRepository.findByItemIdInAndStartIsAfterOrderByStartDesc(items, currentDate,
+                        pageable));
             case WAITING:
-                return mapper.toList(bookingRepository.findByItemIdInAndStatus(items, Status.WAITING));
+                return mapper.toList(bookingRepository.findByItemIdInAndStatus(items, Status.WAITING, pageable));
             case REJECTED:
-                return mapper.toList(bookingRepository.findByItemIdInAndStatus(items, Status.REJECTED));
+                return mapper.toList(bookingRepository.findByItemIdInAndStatus(items, Status.REJECTED, pageable));
             default:
                 throw new RuntimeException("Unknown state: " + state);
         }

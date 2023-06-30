@@ -1,14 +1,18 @@
 package ru.practicum.shareit.request.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
+import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -16,14 +20,23 @@ import java.time.LocalDateTime;
 @Table(name = "requests")
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class ItemRequest {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
     String description;
-    @ManyToOne(optional = false) //попробовать переделать в lazy
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "requestor_id")
     User requestor;
     @CreationTimestamp
     LocalDateTime created;
+    @OneToMany
+    @JoinColumn(name = "request_id")
+    private List<Item> items = new ArrayList<>();
+
+    public ItemRequest(String description, User requestor) {
+        this.description = description;
+        this.requestor = requestor;
+    }
 }

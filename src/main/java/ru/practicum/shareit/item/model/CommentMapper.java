@@ -14,7 +14,7 @@ public class CommentMapper {
     }
 
     public Comment toComment(CommentDto commentDto, Item item, User author) {
-        return new Comment(commentDto.getId(), commentDto.getText(), item, author, commentDto.getCreated());
+        return new Comment(commentDto.getText(), item, author);
     }
 
     public List<CommentDto> toList(List<Comment> comments) {
