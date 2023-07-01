@@ -8,7 +8,6 @@ import ru.practicum.shareit.Create;
 import ru.practicum.shareit.user.dto.UserDto;
 
 import javax.validation.Valid;
-import java.util.List;
 
 @RestController
 @RequestMapping(path = "/users")
