@@ -92,9 +92,6 @@ public class ItemServiceImpl implements ItemService {
     @Transactional
     public List<ItemDto> get(long userId, Pageable pageable) {
         List<Item> items = itemRepository.findByOwnerIdIs(userId, pageable);
-        if (items.isEmpty()) {
-            return Collections.emptyList();
-        }
         LocalDateTime now = LocalDateTime.now();
         Set<Long> itemsId = items.stream().map(Item::getId).collect(Collectors.toSet());
         List<Comment> comments = commentRepository.findByItemIdIn(itemsId);
@@ -123,9 +120,6 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<ItemDto> search(String text, Pageable pageable) {
-        if (text.isBlank()) {
-            return Collections.emptyList();
-        }
         return itemMapper.toDtoList(itemRepository.search(text, pageable));
     }
 

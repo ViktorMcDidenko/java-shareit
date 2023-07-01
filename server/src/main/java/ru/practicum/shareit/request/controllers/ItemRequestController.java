@@ -8,21 +8,17 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.service.ItemRequestService;
 
-import javax.validation.Valid;
-import javax.validation.constraints.Positive;
-import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
 @RestController
 @RequestMapping(path = "/requests")
-@Validated
 @RequiredArgsConstructor
 public class ItemRequestController {
     private final ItemRequestService service;
 
     @PostMapping
     public ItemRequestDto add(@RequestHeader("X-Sharer-User-Id") long requestorId,
-                              @Valid @RequestBody ItemRequestDto itemRequestDto) {
+                              @RequestBody ItemRequestDto itemRequestDto) {
         return service.add(requestorId, itemRequestDto);
     }
 
@@ -33,8 +29,8 @@ public class ItemRequestController {
 
     @GetMapping("/all")
     public List<ItemRequestDto> getTheirs(@RequestHeader("X-Sharer-User-Id") long id,
-                                         @RequestParam(defaultValue = "0") @PositiveOrZero int from,
-                                         @RequestParam(defaultValue = "10") @Positive int size) {
+                                         @RequestParam(defaultValue = "0") int from,
+                                         @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(from / size, size);
         return service.getTheirs(id, pageable);
     }

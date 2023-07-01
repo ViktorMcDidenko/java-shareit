@@ -5,31 +5,26 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.Create;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.service.ItemService;
 
-import javax.validation.Valid;
-import javax.validation.constraints.Positive;
-import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
 @RestController
 @RequestMapping("/items")
-@Validated
 @RequiredArgsConstructor
 public class ItemController {
     private final ItemService service;
 
     @PostMapping
-    @Validated({Create.class})
-    public ItemDto create(@RequestHeader("X-Sharer-User-Id") long userId, @Valid @RequestBody ItemDto item) {
+    public ItemDto create(@RequestHeader("X-Sharer-User-Id") long userId, @RequestBody ItemDto item) {
         return service.add(userId, item);
     }
 
     @PatchMapping("/{id}")
-    public ItemDto update(@RequestHeader("X-Sharer-User-Id") long userId, @Valid @RequestBody ItemDto item,
+    public ItemDto update(@RequestHeader("X-Sharer-User-Id") long userId,
+                          @RequestBody ItemDto item,
                           @PathVariable long id) {
         return service.update(userId, item, id);
     }
@@ -41,23 +36,24 @@ public class ItemController {
 
     @GetMapping
     public List<ItemDto> get(@RequestHeader("X-Sharer-User-Id") long userId,
-                             @RequestParam(defaultValue = "0") @PositiveOrZero int from,
-                             @RequestParam(defaultValue = "10") @Positive int size) {
+                             @RequestParam(defaultValue = "0") int from,
+                             @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(from / size, size);
         return service.get(userId, pageable);
     }
 
     @GetMapping("/search")
     public List<ItemDto> search(@RequestParam(required = false) String text,
-                                @RequestParam(defaultValue = "0") @PositiveOrZero int from,
-                                @RequestParam(defaultValue = "10") @Positive int size) {
+                                @RequestParam(defaultValue = "0") int from,
+                                @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(from / size, size);
         return service.search(text, pageable);
     }
 
     @PostMapping("/{id}/comment")
     public CommentDto addComment(@RequestHeader("X-Sharer-User-Id") long userId,
-                                 @Valid @RequestBody CommentDto commentDto, @PathVariable long id) {
+                                 @RequestBody CommentDto commentDto,
+                                 @PathVariable long id) {
         return service.addComment(userId, commentDto, id);
     }
 }
